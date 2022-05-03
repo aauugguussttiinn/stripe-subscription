@@ -7,8 +7,14 @@
   </br >
   </br >
   <section>
-    
-    <p>This is a test page
+    <% if user_signed_in? %>
+      <%= form_tag purchase_checkouts_path, method: :post, data: {turbo: false} do %>
+        <input type="hidden" name="price_id" value="<%= Rails.application.credentials.dig(:stripe, :pricing, :monthly)%>" />
+        <input type="submit" name="subscribe for 0.05 €" />
+      <% end %>
+    <% else %>
+    <% end %>
+
   </section>
   </br >
   </br >
