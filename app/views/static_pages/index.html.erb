@@ -1,0 +1,26 @@
+<main>
+  <section>
+    <h1>Welcome <%= current_user.email %></h1>
+    <p>This is a test page
+  </section>
+  </hr >
+  </br >
+  </br >
+  <section>
+    
+    <p>This is a test page
+  </section>
+  </br >
+  </br >
+  </br >
+  </br >
+  <section>
+    <%= link_to "S'inscrire", new_user_registration_path %>
+    <%= link_to "Se connecter", new_user_session_path, class: "dropdown-item" %>
+    <%= link_to destroy_user_session_path, method: :delete do %>
+      <i class="fas fa-power-off"></i>
+      Déconnexion
+    <% end %>
+    
+  </section>
+</main>
