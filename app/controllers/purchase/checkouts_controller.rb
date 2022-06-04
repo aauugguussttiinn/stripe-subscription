@@ -2,7 +2,7 @@ class Purchase::CheckoutsController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    price = [:price_id]
+    price = JSON.parse(params[:price_id])
 
     session = Stripe::Checkout::Session.create(
       customer: current_user.stripe_id,
@@ -14,10 +14,15 @@ class Purchase::CheckoutsController < ApplicationController
       customer_email: current_user.email,
       line_items: [{
         quantity: 1,
-        price: price
+        price: price['id']
       }]
     )
 
     redirect_to session.url, allow_other_host: true
+  end
+
+  def success
+    session = Stripe::Checkout::Session.retrieve(params[:session_id])
+    @customer = Stripe::Customer.retrieve(session.customer)
   end
 end

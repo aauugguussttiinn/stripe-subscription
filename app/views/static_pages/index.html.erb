@@ -1,6 +1,10 @@
 <main>
   <section>
-    <h1>Welcome <%= current_user.email %></h1>
+    <% if user_signed_in? %>
+      <h1>Welcome <%= current_user.email %></h1>
+    <% else %>
+      <h1>Welcome, you are not logged in</h1>
+    <% end %>
     <p>This is a test page
   </section>
   </hr >
@@ -8,13 +12,12 @@
   </br >
   <section>
     <% if user_signed_in? %>
-      <%= form_tag purchase_checkouts_path, method: :post, data: {turbo: false} do %>
-        <input type="hidden" name="price_id" value="<%= Rails.application.credentials.dig(:stripe, :pricing, :monthly)%>" />
-        <input type="submit" name="subscribe for 0.05 €" />
+      <%= form_with url: purchase_checkouts_path, method: :post, data: {turbo: false} do |f| %>
+        <%= f.hidden_field :price_id, value: "#{Stripe::Price.retrieve(ENV['TEST_SUBSCRIPTION_KEY'])}" %>
+        <%= f.submit "Payer 0.05 €", value: "Payer 0.05 €" %>
       <% end %>
     <% else %>
     <% end %>
-
   </section>
   </br >
   </br >

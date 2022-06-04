@@ -7,5 +7,6 @@ Rails.application.routes.draw do
   end
   
   resources :subscriptions
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  get "success", to: "purchase/checkouts#success"
+  
 end
