@@ -5,8 +5,11 @@ Rails.application.routes.draw do
   namespace :purchase do
     resources :checkouts
   end
+
+  get "success", to: "purchase/checkouts#success"
   
   resources :subscriptions
-  get "success", to: "purchase/checkouts#success"
+  resources :webhooks, only: :create
+  
   
 end

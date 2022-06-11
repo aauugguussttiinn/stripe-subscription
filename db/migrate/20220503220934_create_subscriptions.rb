@@ -5,8 +5,10 @@ class CreateSubscriptions < ActiveRecord::Migration[6.1]
       t.string :customer_id
       t.references :user, null: false, foreign_key: true
       t.string :status
+      t.string :interval
+      t.string :subscription_id
       t.datetime :current_period_start
-      t.datetime :current_periode_end
+      t.datetime :current_period_end
 
       t.timestamps
     end

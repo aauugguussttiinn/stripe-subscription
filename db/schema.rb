@@ -20,8 +20,10 @@ ActiveRecord::Schema.define(version: 2022_05_03_221556) do
     t.string "customer_id"
     t.bigint "user_id", null: false
     t.string "status"
+    t.string "interval"
+    t.string "subscription_id"
     t.datetime "current_period_start"
-    t.datetime "current_periode_end"
+    t.datetime "current_period_end"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
