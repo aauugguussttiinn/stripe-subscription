@@ -38,15 +38,11 @@ class WebhooksController < ApplicationController
   private
 
   def fullfill_order(checkout_session)
-    puts "00000000000000000000"
+    
     user = User.find(checkout_session.client_reference_id)
     user.update(stripe_id: checkout_session.customer)
-    puts "11111111111111111111111111111"
     stripe_subscription = Stripe::Subscription.retrieve(checkout_session.subscription)
-    puts "2222222222222222222222222222222222"
     Subscription.create(customer_id: stripe_subscription.customer, current_period_start: Time.at(stripe_subscription.current_period_start).to_datetime, current_period_end: Time.at(stripe_subscription.current_period_end).to_datetime, plan_id: stripe_subscription.plan.id, interval: stripe_subscription.plan.interval, status: stripe_subscription.status, subscription_id: stripe_subscription.id, user: user)
-    puts "333333333333333333333333"
-
     
   end
 
