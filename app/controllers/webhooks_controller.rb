@@ -23,10 +23,50 @@ class WebhooksController < ApplicationController
       
       return if !User.exists?(event.data.object.client_reference_id)
       fullfill_order(event.data.object)
+
     when 'checkout.session.async_payment_succeeded'
+      
     when 'invoice.payment_succeeded'
+
+      return unless event.data.object.subscription.present?
+
+      stripe_subscription = Stripe::Subscription.retrieve(event.data.object.subscription)
+
+      subscription = Subscription.find_by(subscription_id: stripe_subscription)
+
+      subscription.update(
+        current_period_start: Time.at(stripe_subscription.current_period_start).to_datetime,
+        current_period_end: Time.at(stripe_subscription.current_period_end).to_datetime,
+        plan_id: stripe_subscription.plan.id,
+        interval: stripe_subscription.interval,
+        status: stripe_subscription.status
+      )
+
     when 'invoice.payment_failed'
+
+      user = User.find_by(stripe_id: event.data.object.customer)
+
+      if user.exists?
+        SubscriptionMailer.with(user: user).payment_failed.deliver_now
+      end
+
     when 'customer.subscription.updated'
+      stripe_subscription = event.data.object
+      
+      if stripe_subscription.cancel_at_period_end == true
+        subscription = Subscription.find_by(subscription_id: stripe_subscription.id)
+
+        if subscription.present?
+          subscription.update(
+            current_period_start: Time.at(stripe_subscription.current_period_start).to_datetime,
+            current_period_end: Time.at(stripe_subscription.current_period_end).to_datetime,
+            plan_id: stripe_subscription.plan.id,
+            interval: stripe_subscription.interval,
+            status: stripe_subscription.status
+          )
+        end
+      end
+
     else
       puts "Unhandled event type : #{event.type}"
     end
@@ -38,7 +78,7 @@ class WebhooksController < ApplicationController
   private
 
   def fullfill_order(checkout_session)
-    
+
     user = User.find(checkout_session.client_reference_id)
     user.update(stripe_id: checkout_session.customer)
     stripe_subscription = Stripe::Subscription.retrieve(checkout_session.subscription)

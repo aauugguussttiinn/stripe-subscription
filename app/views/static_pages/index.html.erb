@@ -11,12 +11,14 @@
   </br >
   </br >
   <section>
-    <% if user_signed_in? %>
+    <% if user_signed_in? && !current_user.subscribed? %>
       <%= form_with url: purchase_checkouts_path, method: :post, data: {turbo: false} do |f| %>
         <%= f.hidden_field :price_id, value: "#{Stripe::Price.retrieve(ENV['TEST_SUBSCRIPTION_KEY'])}" %>
         <%= f.submit "Payer 0.05 €", value: "Payer 0.05 €" %>
       <% end %>
-    <% else %>
+    <% elsif user_signed_in? && current_user.subscribed? %>
+      <p> Vous êtes déjà adhérent </p>
+      <%= button_to "Gérer mon abonnement", billings_path, data: {turbo: false}%>
     <% end %>
   </section>
   </br >
@@ -29,6 +31,12 @@
     <%= link_to destroy_user_session_path, method: :delete do %>
       <i class="fas fa-power-off"></i>
       Déconnexion
+    <% end %>
+
+    <% if current_user.subscribed? %>
+      <div>
+        <%= button_to "Gérer mes moyens de paiement", billings_path, data: { turbo: false } %>
+      </div>
     <% end %>
     
   </section>

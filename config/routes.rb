@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   devise_for :users
   root "static_pages#index"
 
+  resources :billings, only: :create
+
   namespace :purchase do
     resources :checkouts
   end
@@ -10,6 +12,5 @@ Rails.application.routes.draw do
   
   resources :subscriptions
   resources :webhooks, only: :create
-  
   
 end
